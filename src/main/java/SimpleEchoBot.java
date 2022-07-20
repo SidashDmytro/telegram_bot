@@ -1,3 +1,4 @@
+import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -8,7 +9,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class SimpleEchoBot extends TelegramLongPollingBot {
@@ -20,22 +23,41 @@ public class SimpleEchoBot extends TelegramLongPollingBot {
         FINISH
     }
 
+    private static final String COMMAND_START = "/start";
+    private static final String COMMAND_HELP = "/help";
+
+    private HashSet<String> mSetOfCommands = new HashSet<>();
     private States mState = States.START;
+
+    public SimpleEchoBot() {
+        init();
+    }
+
+    public SimpleEchoBot(DefaultBotOptions options) {
+        super(options);
+        init();
+    }
+
+    private void init() {
+        mSetOfCommands.add(COMMAND_START);
+        mSetOfCommands.add(COMMAND_HELP);
+    }
 
     @Override
     public void onUpdateReceived(Update update) {
         try {
             Message message = update.getMessage();
-            //if (!message.isReply()) return;
+
+            if ((mState != States.START) && (mSetOfCommands.contains(update.getMessage().getText()))) return;
 
             switch (mState) {
                 case START: {
                     String text = message.getText();
-                    if (text.equals("/start")) {
+                    if (text.equals(COMMAND_START)) {
                         startMessage(message);
                         mState = States.ORDER;
                     }
-                    if (text.equals("/help")) {
+                    if (text.equals(COMMAND_HELP)) {
                         helpMessage(message);
                     }
                 }
@@ -70,7 +92,7 @@ public class SimpleEchoBot extends TelegramLongPollingBot {
         }
     }
 
-    public void startMessage(Message message) throws TelegramApiException {
+    private void startMessage(Message message) throws TelegramApiException {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setText("Для заказа такси 🚕 нажмите кнопку ниже 👇");
         sendMessage.setParseMode(ParseMode.MARKDOWN);
@@ -90,7 +112,7 @@ public class SimpleEchoBot extends TelegramLongPollingBot {
         execute(sendMessage);
     }
 
-    public void helpMessage(Message message) throws TelegramApiException {
+    private void helpMessage(Message message) throws TelegramApiException {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setText("Бот для заказа такси " +
                 "\n\n/start - заказать такси" +
@@ -112,7 +134,7 @@ public class SimpleEchoBot extends TelegramLongPollingBot {
         execute(sendMessage);
     }
 
-    public void orderTaxi(Message message) throws TelegramApiException {
+    private void orderTaxi(Message message) throws TelegramApiException {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setText("Нажмите на кнопку 👇, чтобы поделиться Вашим номером телефона");
         sendMessage.setParseMode(ParseMode.MARKDOWN);
@@ -132,7 +154,7 @@ public class SimpleEchoBot extends TelegramLongPollingBot {
         execute(sendMessage);
     }
 
-    public void startPoint(Message message) throws TelegramApiException {
+    private void startPoint(Message message) throws TelegramApiException {
         Contact contact = message.getContact();
         SendMessage sendMessage = new SendMessage();
         sendMessage.setText("Напишите адрес, где Вы будете ждать такси 👇");
@@ -143,7 +165,7 @@ public class SimpleEchoBot extends TelegramLongPollingBot {
         execute(sendMessage);
     }
 
-    public void finishPoint(Message message) throws TelegramApiException {
+    private void finishPoint(Message message) throws TelegramApiException {
         SendMessage locationMessage = new SendMessage();
         locationMessage.setText("Напишите адрес, куда планируете ехать 👇");
         locationMessage.setParseMode(ParseMode.MARKDOWN);
@@ -152,7 +174,7 @@ public class SimpleEchoBot extends TelegramLongPollingBot {
         System.out.println("Едем из: " + message.getText());
     }
 
-    public void acceptedOrder(Message message) throws TelegramApiException {
+    private void acceptedOrder(Message message) throws TelegramApiException {
         SendMessage locationMessage = new SendMessage();
         locationMessage.setText("Спасибо, Ваш заказ принят. Ожидайте такси!");
         locationMessage.setParseMode(ParseMode.MARKDOWN);
@@ -163,11 +185,11 @@ public class SimpleEchoBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "taxi2022_bot";
+        return Constants.BOT_NAME;
     }
 
     @Override
     public String getBotToken() {
-        return "5419733617:AAGgp8_YCST0iggyoSkmT7_rXg-gdWqnoAM";
+        return Constants.BOT_TOKEN;
     }
 }
