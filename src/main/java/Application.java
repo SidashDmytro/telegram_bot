@@ -12,7 +12,7 @@ public class Application {
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
         try {
             log.info("Registering bot...");
-            telegramBotsApi.registerBot(new SimpleEchoBot());
+            telegramBotsApi.registerBot(new TaxiBot());
         } catch (TelegramApiRequestException e) {
             log.error("Failed to register bot(check internet connection / bot token or make sure only one instance of bot is running).", e);
         }

@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class SimpleEchoBot extends TelegramLongPollingBot {
+public class TaxiBot extends TelegramLongPollingBot {
     enum States {
         START,
         ORDER,
@@ -29,11 +29,11 @@ public class SimpleEchoBot extends TelegramLongPollingBot {
     private HashSet<String> mSetOfCommands = new HashSet<>();
     private States mState = States.START;
 
-    public SimpleEchoBot() {
+    public TaxiBot() {
         init();
     }
 
-    public SimpleEchoBot(DefaultBotOptions options) {
+    public TaxiBot(DefaultBotOptions options) {
         super(options);
         init();
     }
@@ -98,7 +98,7 @@ public class SimpleEchoBot extends TelegramLongPollingBot {
         sendMessage.setParseMode(ParseMode.MARKDOWN);
         sendMessage.setChatId(message.getChatId());
 
-        // создаем клавиатуру
+        // create a keyboard
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setResizeKeyboard(true);
         List<KeyboardRow> keyboardRowList = new ArrayList<>();
@@ -120,7 +120,7 @@ public class SimpleEchoBot extends TelegramLongPollingBot {
         sendMessage.setParseMode(ParseMode.MARKDOWN);
         sendMessage.setChatId(message.getChatId());
 
-        // создаем клавиатуру
+        // create a keyboard
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setResizeKeyboard(true);
         List<KeyboardRow> keyboardRowList = new ArrayList<>();
